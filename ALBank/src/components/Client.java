@@ -12,7 +12,6 @@ public class Client {
 		this.name = Name;
 		this.firstname = FirstName;
 		this.clientnumber++;
-
 	}
 
 	public String getName() {
