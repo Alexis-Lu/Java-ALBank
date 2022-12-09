@@ -4,11 +4,11 @@ public class SavingsAccount extends Account {
 
 	// 1.2.2 Creation of the CurrentAccount and SavingsAccount
 
-	public SavingsAccount(String Label, String client) {
-		super(Label, client);
-		setLabel(Label);
+	public SavingsAccount(String label, Client client) {
+		super(label, client);
+		setLabel(label);
 		this.client = client;
-		this.setBalance(0.0);
+		this.setBalance(Math.random() * 1000 - 1 + 1);
 	}
 
 }

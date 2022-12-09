@@ -3,15 +3,17 @@ package components;
 //1.2.1 Creation of the account class
 
 public abstract class Account {
-	private String label;
-	private Double balance;
-	private int accountNumber;
-	String client;
+	protected String label;
+	protected Double balance;
+	protected static int index;
+	protected int accountNumber;
+	protected Client client;
 
-	protected Account(String Label, String client) {
-		this.label = Label;
+	protected Account(String label, Client client) {
+		this.label = label;
 		this.client = client;
-		this.accountNumber++;
+		index++;
+		this.accountNumber = index;
 	}
 
 	public String getLabel() {
@@ -32,6 +34,10 @@ public abstract class Account {
 
 	public int getAccountNumber() {
 		return accountNumber;
+	}
+
+	public Client getClient() {
+		return client;
 	}
 
 }

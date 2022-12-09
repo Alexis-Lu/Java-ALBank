@@ -6,12 +6,15 @@ public class Client {
 
 	private String name;
 	private String firstname;
+	private static int index;
 	private int clientnumber;
 
-	public Client(String Name, String FirstName) {
-		this.name = Name;
-		this.firstname = FirstName;
-		this.clientnumber++;
+	public Client(String name, String firstName) {
+		this.name = name;
+		this.firstname = firstName;
+		index++;
+		this.clientnumber = index;
+
 	}
 
 	public String getName() {
@@ -33,6 +36,4 @@ public class Client {
 	public int getClientNumber() {
 		return clientnumber;
 	}
-
-	// public void createClient()
 }
