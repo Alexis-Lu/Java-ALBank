@@ -4,7 +4,7 @@ package components;
 
 public abstract class Account {
 	protected String label;
-	protected Double balance;
+	protected Double balance = Math.random() * 1000 - 1000 + 1;
 	protected static int index;
 	protected int accountNumber;
 	protected Client client;
@@ -28,8 +28,19 @@ public abstract class Account {
 		return balance;
 	}
 
-	public void setBalance(Double balance) {
-		this.balance = balance;
+	public void setBalance(Flow d) {
+		if (d.getComment().equals("transfer")) {
+			if (d.getTargetAccountNumber() == (this.accountNumber)) {
+				this.balance = balance + d.getAmount();
+			} else {
+				this.balance = balance - d.getAmount();
+			}
+
+		} else if (d.getComment().equals("debit")) {
+			this.balance = balance - d.getAmount();
+		} else if (d.getComment().equals("credit")) {
+			this.balance = balance + d.getAmount();
+		}
 	}
 
 	public int getAccountNumber() {

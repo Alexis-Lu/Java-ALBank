@@ -8,7 +8,7 @@ public class CurrentAccount extends Account {
 		super(label, client);
 		setLabel(label);
 		this.client = client;
-		this.setBalance(Math.random() * 1000 - 1 + 1);
+		// this.setBalance(Math.random() * 1000 - 1 + 1, null);
 	}
 
 }

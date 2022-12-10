@@ -1,24 +1,34 @@
 package main;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 import components.Account;
 
 //1.1.2 Creation of main class for tests
 
 import components.Client;
+import components.Credit;
 import components.CurrentAccount;
+import components.Debit;
+import components.Flow;
 import components.SavingsAccount;
+import components.Transfer;
 
 public class main {
 
 	public static void main(String[] args) {
+		Paths.get(null);
+
 		// 1.1.1 Creation of the Client class
 		ArrayList<Client> listClients = new ArrayList<Client>();
 
@@ -35,7 +45,14 @@ public class main {
 		// 1.3.1 Adaptation of the table of accounts
 		Map<Integer, Account> accountInfos = new HashMap<>();
 		accountInfos = loadHashMap(listAccounts);
-		// System.out.println("//////////////////////////////////////");
+		showHashMap(accountInfos);
+
+		// 1.3.4 Creation of the flow array
+		ArrayList<Flow> listFlows = new ArrayList<Flow>();
+		listFlows = loadFlowList(listAccounts);
+
+		// 1.3.5 Updating accounts
+		updateBalance(listFlows, accountInfos);
 		showHashMap(accountInfos);
 	}
 
@@ -101,6 +118,50 @@ public class main {
 					+ e.getValue().getBalance());
 		}
 
+	}
+
+	public static ArrayList<Flow> loadFlowList(ArrayList<Account> listAccounts) {
+		ArrayList<Flow> listFlows = new ArrayList<Flow>();
+		Date currentDate = new Date();
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.add(Calendar.DATE, 2);
+		Date currentDatePlusTwo = c.getTime();
+		Debit debit = new Debit("debit", 0, 50, 1, true, currentDatePlusTwo);
+		listFlows.add(debit);
+		listAccounts.forEach(s -> {
+			if (s.getLabel().equals("SavingsAccount")) {
+				Credit credit = new Credit("credit", 1, 1500, s.getAccountNumber(), false, currentDatePlusTwo);
+				Credit credit2 = new Credit("credit", 1, 100.50, s.getAccountNumber(), false, currentDatePlusTwo);
+				listFlows.add(credit);
+				listFlows.add(credit2);
+			} else {
+				Credit credit = new Credit("credit", 1, 100.50, s.getAccountNumber(), false, currentDatePlusTwo);
+				listFlows.add(credit);
+			}
+
+		});
+		Transfer transfer = new Transfer("transfer", 2, 50, 2, false, currentDatePlusTwo, 1);
+		listFlows.add(transfer);
+		System.out.print(listFlows);
+		return listFlows;
+
+	}
+
+	public static void updateBalance(ArrayList<Flow> flowList, Map<Integer, Account> accountInfos) {
+		flowList.forEach(s -> {
+			accountInfos.get(s.getTargetAccountNumber()).setBalance(s);
+
+		});
+		Predicate<Double> less_than = x -> x < 0;
+		accountInfos.entrySet().forEach(entry -> {
+			if (less_than.test(entry.getValue().getBalance())) {
+				System.out.println("Negative balance");
+			} else {
+				System.out.println("ok");
+			}
+			System.out.println(entry.getKey() + " " + entry.getValue().getBalance());
+		});
 	}
 
 }
