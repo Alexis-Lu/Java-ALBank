@@ -1,9 +1,0 @@
-/**
- * 
- */
-/**
- * @author Alexis
- *
- */
-module ALBank {
-}

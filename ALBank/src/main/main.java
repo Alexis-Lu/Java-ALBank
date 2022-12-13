@@ -1,6 +1,11 @@
 package main;
 
-import java.nio.file.Paths;
+import java.beans.XMLEncoder;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -12,10 +17,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
-import components.Account;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 //1.1.2 Creation of main class for tests
 
+import components.Account;
 import components.Client;
 import components.Credit;
 import components.CurrentAccount;
@@ -27,8 +39,6 @@ import components.Transfer;
 public class main {
 
 	public static void main(String[] args) {
-		Paths.get(null);
-
 		// 1.1.1 Creation of the Client class
 		ArrayList<Client> listClients = new ArrayList<Client>();
 
@@ -52,8 +62,13 @@ public class main {
 		listFlows = loadFlowList(listAccounts);
 
 		// 1.3.5 Updating accounts
-		updateBalance(listFlows, accountInfos);
+		// updateBalance(listFlows, accountInfos);
 		showHashMap(accountInfos);
+
+		// 2.1 JSON file of flows
+		updateBalance(createFlowsFromJson(), accountInfos);
+		createAccountsFromXml(listClients);
+
 	}
 
 	public static ArrayList<Client> loadClientsList(int nbClient) {
@@ -74,8 +89,8 @@ public class main {
 	public static ArrayList<Account> loadAccounts(ArrayList<Client> listClients) {
 		ArrayList<Account> listAccounts = new ArrayList<Account>();
 		listClients.forEach(s -> {
-			CurrentAccount cAcc = new CurrentAccount("CurrentAccount", s);
-			SavingsAccount sAcc = new SavingsAccount("SavingsAccount", s);
+			Account cAcc = new CurrentAccount("CurrentAccount", s);
+			Account sAcc = new SavingsAccount("SavingsAccount", s);
 			listAccounts.add(cAcc);
 			listAccounts.add(sAcc);
 
@@ -127,21 +142,21 @@ public class main {
 		c.setTime(currentDate);
 		c.add(Calendar.DATE, 2);
 		Date currentDatePlusTwo = c.getTime();
-		Debit debit = new Debit("debit", 0, 50, 1, true, currentDatePlusTwo);
+		Flow debit = new Debit("debit", 0, 50, 1, true, currentDatePlusTwo);
 		listFlows.add(debit);
 		listAccounts.forEach(s -> {
 			if (s.getLabel().equals("SavingsAccount")) {
-				Credit credit = new Credit("credit", 1, 1500, s.getAccountNumber(), false, currentDatePlusTwo);
-				Credit credit2 = new Credit("credit", 1, 100.50, s.getAccountNumber(), false, currentDatePlusTwo);
+				Flow credit = new Credit("credit", 1, 1500, s.getAccountNumber(), true, currentDatePlusTwo);
+				Flow credit2 = new Credit("credit", 1, 100.50, s.getAccountNumber(), true, currentDatePlusTwo);
 				listFlows.add(credit);
 				listFlows.add(credit2);
 			} else {
-				Credit credit = new Credit("credit", 1, 100.50, s.getAccountNumber(), false, currentDatePlusTwo);
+				Flow credit = new Credit("credit", 1, 100.50, s.getAccountNumber(), true, currentDatePlusTwo);
 				listFlows.add(credit);
 			}
 
 		});
-		Transfer transfer = new Transfer("transfer", 2, 50, 2, false, currentDatePlusTwo, 1);
+		Flow transfer = new Transfer("transfer", 2, 50, 2, true, currentDatePlusTwo, 1);
 		listFlows.add(transfer);
 		System.out.print(listFlows);
 		return listFlows;
@@ -162,6 +177,76 @@ public class main {
 			}
 			System.out.println(entry.getKey() + " " + entry.getValue().getBalance());
 		});
+	}
+
+	public static ArrayList<Flow> createFlowsFromJson() {
+		ArrayList<Flow> listFlows = new ArrayList<Flow>();
+
+		File file = new File("src\\files\\Flows.JSON");
+
+		JsonElement fileElement;
+		try {
+			fileElement = JsonParser.parseReader(new FileReader(file));
+			Map<String, Object> retMap = new GsonBuilder().setLenient().create().fromJson(fileElement,
+					new TypeToken<HashMap<String, Object>>() {
+					}.getType());
+			for (Entry<String, Object> mapentry : retMap.entrySet()) {
+				if (mapentry.getKey().startsWith("debit")) {
+					String json = new Gson().toJson(mapentry.getValue());
+					Flow debit = new Gson().fromJson(json, Debit.class);
+					listFlows.add(debit);
+					System.out.println(debit);
+				} else if (mapentry.getKey().startsWith("transfer")) {
+					String json = new Gson().toJson(mapentry.getValue());
+					Flow transfer = new Gson().fromJson(json, Transfer.class);
+					listFlows.add(transfer);
+					System.out.println(transfer);
+				} else if (mapentry.getKey().startsWith("credit")) {
+					String json = new Gson().toJson(mapentry.getValue());
+					json.replace("dateOfFlow", json);
+					Flow credit = new Gson().fromJson(json, Credit.class);
+					listFlows.add(credit);
+					System.out.println(credit);
+				}
+
+			}
+		} catch (JsonIOException e) {
+			e.printStackTrace();
+		} catch (JsonSyntaxException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return listFlows;
+
+	}
+
+	public static void createAccountsFromXml(List<Client> listClients) {
+		/*
+		 * File file = new File("src\\files\\Accounts.xml"); try { JAXBContext
+		 * jaxbContext = JAXBContext.newInstance(CurrentAccount.class); Unmarshaller ums
+		 * = jaxbContext.createUnmarshaller(); Account acc = (Account)
+		 * ums.unmarshal(file); System.out.println(acc.getLabel()); } catch
+		 * (JAXBException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 */
+		/*
+		 * listClients.stream().forEach(s -> {
+		 * 
+		 * 
+		 * });
+		 */
+
+		Account cAcc = new CurrentAccount("currentAccount", listClients.get(0));
+		try {
+			FileOutputStream fos = new FileOutputStream(new File("personn.xml"));
+			XMLEncoder encoder = new XMLEncoder(fos);
+			encoder.writeObject(cAcc);
+			encoder.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

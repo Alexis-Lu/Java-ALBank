@@ -1,0 +1,4 @@
+<CurrentAccount>
+	<label>CurrentAccount</label>
+	<client>1</client>
+</CurrentAccount>
