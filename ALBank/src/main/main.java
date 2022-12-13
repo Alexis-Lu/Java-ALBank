@@ -17,6 +17,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -222,19 +226,17 @@ public class main {
 	}
 
 	public static void createAccountsFromXml(List<Client> listClients) {
-		/*
-		 * File file = new File("src\\files\\Accounts.xml"); try { JAXBContext
-		 * jaxbContext = JAXBContext.newInstance(CurrentAccount.class); Unmarshaller ums
-		 * = jaxbContext.createUnmarshaller(); Account acc = (Account)
-		 * ums.unmarshal(file); System.out.println(acc.getLabel()); } catch
-		 * (JAXBException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
-		/*
-		 * listClients.stream().forEach(s -> {
-		 * 
-		 * 
-		 * });
-		 */
+
+		try {
+			File file = new File("src\\files\\Accounts.xml");
+			JAXBContext jaxbContext = JAXBContext.newInstance(CurrentAccount.class);
+
+			Unmarshaller ums = jaxbContext.createUnmarshaller();
+			Account acc = (Account) ums.unmarshal(file);
+			System.out.println(acc.getLabel());
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 
 		Account cAcc = new CurrentAccount("currentAccount", listClients.get(0));
 		try {
