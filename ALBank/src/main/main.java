@@ -1,7 +1,9 @@
 package main;
 
+import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -245,6 +247,21 @@ public class main {
 			encoder.writeObject(cAcc);
 			encoder.close();
 			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+
+			FileInputStream fis = new FileInputStream(new File("src\\files\\Accounts.xml"));
+			XMLDecoder decoder = new XMLDecoder(fis);
+
+			CurrentAccount acc2 = (CurrentAccount) decoder.readObject();
+			decoder.close();
+			fis.close();
+
+			System.out.print(acc2.getLabel());
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
