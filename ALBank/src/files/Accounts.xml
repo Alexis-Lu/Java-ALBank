@@ -1,4 +1,26 @@
+<Accounts>
 <CurrentAccount>
-	<label>CurrentAccount</label>
-	<client>1</client>
+	<label value="CurrentAccount" />
+	<client value="0" />
 </CurrentAccount>
+<CurrentAccount>
+	<label value="CurrentAccount" />
+	<client value="1" />
+</CurrentAccount>
+<CurrentAccount>
+	<label value="CurrentAccount" />
+	<client value="2" />
+</CurrentAccount>
+<SavingAccount>
+	<label value="SavingAccount" />
+	<client value="0" />
+</SavingAccount>
+<SavingAccount>
+	<label value="SavingAccount" />
+	<client value="1" />
+</SavingAccount>
+<SavingAccount>
+	<label value="SavingAccount" />
+	<client value="2" />
+</SavingAccount>
+</Accounts>

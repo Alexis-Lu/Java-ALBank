@@ -1,9 +1,5 @@
 package components;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
-
 public class CurrentAccount extends Account {
 
 	// 1.2.2 Creation of the CurrentAccount and SavingsAccount

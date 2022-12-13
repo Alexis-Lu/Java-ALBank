@@ -1,11 +1,7 @@
 package main;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,9 +15,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -55,7 +57,9 @@ public class main {
 
 		ArrayList<Account> listAccounts = new ArrayList<Account>();
 
-		listAccounts = loadAccounts(listClients);
+		listAccounts = createAccountsFromXml(listClients);
+
+		// listAccounts = loadAccounts(listClients);
 		showAccountsList(listAccounts);
 
 		// 1.3.1 Adaptation of the table of accounts
@@ -227,44 +231,83 @@ public class main {
 
 	}
 
-	public static void createAccountsFromXml(List<Client> listClients) {
+	public static ArrayList<Account> createAccountsFromXml(List<Client> listClients) {
+
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		ArrayList<Account> accountList = new ArrayList<Account>();
 
 		try {
-			File file = new File("src\\files\\Accounts.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(CurrentAccount.class);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(new File("src\\files\\Accounts.xml"));
 
-			Unmarshaller ums = jaxbContext.createUnmarshaller();
-			Account acc = (Account) ums.unmarshal(file);
-			System.out.println(acc.getLabel());
-		} catch (JAXBException e) {
+			document.getDocumentElement().normalize();
+
+			NodeList list = document.getElementsByTagName("CurrentAccount");
+			NodeList listSa = document.getElementsByTagName("SavingAccount");
+			ArrayList<String> label = new ArrayList<String>();
+
+			for (int i = 0; i < list.getLength(); i++) {
+				if (i < listClients.size()) {
+					Node account = list.item(i);
+
+					if (account.getNodeType() == Node.ELEMENT_NODE) {
+						Element accountElement = (Element) account;
+
+						NodeList accountDetails = account.getChildNodes();
+						for (int j = 0; j < accountDetails.getLength(); j++) {
+							Node detail = accountDetails.item(j);
+							if (detail.getNodeType() == Node.ELEMENT_NODE) {
+								Element detailElement = (Element) detail;
+								if (detailElement.getTagName().equals("label")) {
+									label.add(detailElement.getAttribute("value"));
+								} else {
+									Account cacc = new CurrentAccount(label.get(i),
+											listClients.get(Integer.parseInt(detailElement.getAttribute("value"))));
+									accountList.add(cacc);
+								}
+							}
+						}
+					}
+
+				} else {
+					break;
+				}
+
+			}
+			label.clear();
+			for (int i = 0; i < listSa.getLength(); i++) {
+				if (i < listClients.size()) {
+					Node accountSa = listSa.item(i);
+
+					if (accountSa.getNodeType() == Node.ELEMENT_NODE) {
+						Element accountElement = (Element) accountSa;
+						NodeList accountDetails = accountSa.getChildNodes();
+						for (int j = 0; j < accountDetails.getLength(); j++) {
+							Node detail = accountDetails.item(j);
+							if (detail.getNodeType() == Node.ELEMENT_NODE) {
+								Element detailElement = (Element) detail;
+								if (detailElement.getTagName().equals("label")) {
+									label.add(detailElement.getAttribute("value"));
+								} else {
+									Account cacc = new SavingsAccount(label.get(i),
+											listClients.get(Integer.parseInt(detailElement.getAttribute("value"))));
+									accountList.add(cacc);
+								}
+							}
+						}
+					}
+				}
+
+			}
+
+		} catch (ParserConfigurationException e1) {
+			e1.printStackTrace();
+		} catch (SAXException e) {
 			e.printStackTrace();
-		}
-
-		Account cAcc = new CurrentAccount("currentAccount", listClients.get(0));
-		try {
-			FileOutputStream fos = new FileOutputStream(new File("personn.xml"));
-			XMLEncoder encoder = new XMLEncoder(fos);
-			encoder.writeObject(cAcc);
-			encoder.close();
-			fos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		try {
-
-			FileInputStream fis = new FileInputStream(new File("src\\files\\Accounts.xml"));
-			XMLDecoder decoder = new XMLDecoder(fis);
-
-			CurrentAccount acc2 = (CurrentAccount) decoder.readObject();
-			decoder.close();
-			fis.close();
-
-			System.out.print(acc2.getLabel());
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		return accountList;
 
 	}
 
