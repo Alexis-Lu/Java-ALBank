@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -69,15 +70,14 @@ public class main {
 
 		// 1.3.4 Creation of the flow array
 		ArrayList<Flow> listFlows = new ArrayList<Flow>();
-		listFlows = loadFlowList(listAccounts);
+		// 2.1 JSON file of flows
+		listFlows = updateBalance(createFlowsFromJson(), accountInfos);
+
+		// listFlows = loadFlowList(listAccounts);
 
 		// 1.3.5 Updating accounts
 		// updateBalance(listFlows, accountInfos);
 		showHashMap(accountInfos);
-
-		// 2.1 JSON file of flows
-		updateBalance(createFlowsFromJson(), accountInfos);
-		createAccountsFromXml(listClients);
 
 	}
 
@@ -92,7 +92,7 @@ public class main {
 	}
 
 	public static void showClientsList(List<Client> listClients) {
-		listClients.stream().forEach(s -> System.out.println(s.getName() + ", " + s.getFirstName()));
+		listClients.stream().forEach(s -> System.out.println(s.toString()));
 
 	}
 
@@ -111,8 +111,7 @@ public class main {
 	public static void showAccountsList(ArrayList<Account> listAccounts) {
 
 		listAccounts.stream().forEach(s -> {
-			System.out.println(s.getLabel() + " : " + s.getClient().getName() + ", " + s.getClient().getName() + " : "
-					+ s.getBalance());
+			System.out.println(s.toString());
 		});
 
 	}
@@ -138,9 +137,8 @@ public class main {
 		});
 
 		for (Map.Entry<Integer, Account> e : list) {
-			System.out.println(e.getKey() + " | " + e.getValue().getClient().getName() + " "
-					+ e.getValue().getClient().getFirstName() + " " + e.getValue().getLabel() + " balance = "
-					+ e.getValue().getBalance());
+
+			System.out.println(e.toString());
 		}
 
 	}
@@ -173,7 +171,7 @@ public class main {
 
 	}
 
-	public static void updateBalance(ArrayList<Flow> flowList, Map<Integer, Account> accountInfos) {
+	public static ArrayList<Flow> updateBalance(ArrayList<Flow> flowList, Map<Integer, Account> accountInfos) {
 		flowList.forEach(s -> {
 			accountInfos.get(s.getTargetAccountNumber()).setBalance(s);
 
@@ -187,6 +185,7 @@ public class main {
 			}
 			System.out.println(entry.getKey() + " " + entry.getValue().getBalance());
 		});
+		return flowList;
 	}
 
 	public static ArrayList<Flow> createFlowsFromJson() {
@@ -196,6 +195,12 @@ public class main {
 
 		JsonElement fileElement;
 		try {
+			Date currentDate = new Date();
+			Calendar c = Calendar.getInstance();
+			c.setTime(currentDate);
+			c.add(Calendar.DATE, 2);
+			Date currentDatePlusTwo = c.getTime();
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 			fileElement = JsonParser.parseReader(new FileReader(file));
 			Map<String, Object> retMap = new GsonBuilder().setLenient().create().fromJson(fileElement,
 					new TypeToken<HashMap<String, Object>>() {
@@ -203,17 +208,18 @@ public class main {
 			for (Entry<String, Object> mapentry : retMap.entrySet()) {
 				if (mapentry.getKey().startsWith("debit")) {
 					String json = new Gson().toJson(mapentry.getValue());
+					json.replace("dateOfFlow", currentDatePlusTwo.toString());
 					Flow debit = new Gson().fromJson(json, Debit.class);
 					listFlows.add(debit);
 					System.out.println(debit);
 				} else if (mapentry.getKey().startsWith("transfer")) {
 					String json = new Gson().toJson(mapentry.getValue());
+					json.replace("dateOfFlow", currentDatePlusTwo.toString());
 					Flow transfer = new Gson().fromJson(json, Transfer.class);
 					listFlows.add(transfer);
 					System.out.println(transfer);
 				} else if (mapentry.getKey().startsWith("credit")) {
 					String json = new Gson().toJson(mapentry.getValue());
-					json.replace("dateOfFlow", json);
 					Flow credit = new Gson().fromJson(json, Credit.class);
 					listFlows.add(credit);
 					System.out.println(credit);

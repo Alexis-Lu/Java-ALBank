@@ -72,4 +72,10 @@ public abstract class Flow {
 		this.dateOfFlow = dateOfFlow;
 	}
 
+	public String toString() {
+		return "Comment : " + this.getComment() + " /  Identifier : " + this.getIdentifier() + " / Amount : "
+				+ this.getAmount() + " Target Account : " + this.getTargetAccountNumber() + " Effect : "
+				+ this.getEffect() + "/ Date : " + this.getDateOfFlow();
+	}
+
 }

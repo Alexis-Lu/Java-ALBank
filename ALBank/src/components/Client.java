@@ -36,4 +36,8 @@ public class Client {
 	public int getClientNumber() {
 		return clientnumber;
 	}
+
+	public String toString() {
+		return this.getName() + " " + this.getFirstName() + " : Client number = " + this.getClientNumber();
+	}
 }

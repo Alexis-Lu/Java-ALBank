@@ -1,7 +1,7 @@
-{ "debit1" : {"comment":"debit","identifier":0,"amount":50.0,"targetAccountNumber":1,"effect":true, "dateOfFlow" : null},
-"credit1" : {"comment" : "credit", "identifier" : 3,"amount" : 1500,"targetAccountNumber": 4,"effect" : true},
-"credit2" : {"comment" : "credit", "identifier" : 4,"amount" : 1500,"targetAccountNumber": 6,"effect" : true},
-"credit3" : {"comment" : "credit", "identifier" : 5,"amount" : 1500,"targetAccountNumber": 1,"effect" : true},
-"credit4" : {"comment" : "credit", "identifier" : 6,"amount" : 1500,"targetAccountNumber": 3,"effect" : true},
-"credit5" : {"comment" : "credit", "identifier" : 7,"amount" : 1500,"targetAccountNumber": 5,"effect" : true},
-"transfer1" : {"comment" : "transfer", "identifier" : 8,"amount" : 50,"targetAccountNumber": 2,"effect" : true,"fromAccountNumber" : 1}}
+{ "debit1" : {"comment":"debit","identifier":0,"amount":50.0,"targetAccountNumber":1,"effect":true, "dateOfFlow" : "2022-12-14T18:25:43.511Z"},
+"credit1" : {"comment" : "credit", "identifier" : 3,"amount" : 1500,"targetAccountNumber": 4,"effect" : true, "dateOfFlow" : "2022-12-14T18:25:43.511Z"},
+"credit2" : {"comment" : "credit", "identifier" : 4,"amount" : 1500,"targetAccountNumber": 6,"effect" : true, "dateOfFlow" : "2022-12-14T18:25:43.511Z"},
+"credit3" : {"comment" : "credit", "identifier" : 5,"amount" : 1500,"targetAccountNumber": 1,"effect" : true, "dateOfFlow" : "2022-12-14T18:25:43.511Z"},
+"credit4" : {"comment" : "credit", "identifier" : 6,"amount" : 1500,"targetAccountNumber": 3,"effect" : true, "dateOfFlow" : "2022-12-14T18:25:43.511Z"},
+"credit5" : {"comment" : "credit", "identifier" : 7,"amount" : 1500,"targetAccountNumber": 5,"effect" : true, "dateOfFlow" : "2022-12-14T18:25:43.511Z"},
+"transfer1" : {"comment" : "transfer", "identifier" : 8,"amount" : 50,"targetAccountNumber": 2,"effect" : true,"fromAccountNumber" : 1, "dateOfFlow" : "2022-12-14T18:25:43.511Z"}}

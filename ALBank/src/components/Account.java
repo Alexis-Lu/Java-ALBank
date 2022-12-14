@@ -51,4 +51,8 @@ public abstract class Account {
 		return client;
 	}
 
+	public String toString() {
+		return "Client = " + this.client.toString() + " : " + this.getLabel() + " = " + this.getBalance();
+	}
+
 }
